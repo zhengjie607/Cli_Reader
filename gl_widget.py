@@ -13,7 +13,6 @@ class GLWidget(QOpenGLWidget):
         super(GLWidget, self).__init__(*args, **kwargs)
         self.setGeometry(QtCore.QRect(10, 10,700, 700))#窗口位置和大小
         self.isMove=False
-        self.isRotate=False
         self.data=[]
         self.layerindex=0
     def initdata(self,data):
@@ -47,17 +46,18 @@ class GLWidget(QOpenGLWidget):
         for i in range(0,len(list_usepoint)):
             
             #print("i:",i)
-            point_num=len(list_usepoint[i][layer_num])
-            #print("多段线数量:",point_num)
-            for j in range(0,point_num):
-                glBegin(GL_LINE_LOOP)
-                glColor(1,0,0)
-                #print("第{0}个多段线".format(j))
-                for w in range(0,len(list_usepoint[i][layer_num][j])):
-                    #print("第{0}个点".format(w))
-                    glVertex3f(list_usepoint[i][layer_num][j][w][0],list_usepoint[i][layer_num][j][w][1],0)
-                    #print("({0},{1},{2})".format(list_usepoint[i][layer_num][j][w][0],list_usepoint[i][layer_num][j][w][1],z))
-                glEnd()
+            if len(list_usepoint[i])<layer_num:
+                point_num=len(list_usepoint[i][layer_num])
+                #print("多段线数量:",point_num)
+                for j in range(0,point_num):
+                    glBegin(GL_LINE_LOOP)
+                    glColor(1,0,0)
+                    #print("第{0}个多段线".format(j))
+                    for w in range(0,len(list_usepoint[i][layer_num][j])):
+                        #print("第{0}个点".format(w))
+                        glVertex3f(list_usepoint[i][layer_num][j][w][0],list_usepoint[i][layer_num][j][w][1],0)
+                        #print("({0},{1},{2})".format(list_usepoint[i][layer_num][j][w][0],list_usepoint[i][layer_num][j][w][1],z))
+                    glEnd()
         
     def VBO(self,list_usepoint,layer_num):
         #glPushMatrix()
@@ -79,8 +79,6 @@ class GLWidget(QOpenGLWidget):
         self.myMousePosition=event.pos()
         if event.button()==QtCore.Qt.LeftButton:
             self.isMove=True
-        if event.button()==QtCore.Qt.RightButton:
-            self.isRotate=True
         #self.update()
     def wheelEvent(self,event):
         if event.angleDelta().y()>0:
@@ -93,19 +91,10 @@ class GLWidget(QOpenGLWidget):
     def mouseReleaseEvent(self,event):
         if event.button()==QtCore.Qt.LeftButton:
             self.isMove=False
-        if event.button()==QtCore.Qt.RightButton:
-            self.isRotate=False
     def mouseMoveEvent(self,event):
         if self.isMove:
             moveX=event.pos().x()-self.myMousePosition.x()
             moveY=event.pos().y()-self.myMousePosition.y()
             self.camera.Move(moveX*self.camera.right/300,moveY*self.camera.right/300)
-            self.myMousePosition=event.pos()
-        if self.isRotate:
-            moveX=event.pos().x()-self.myMousePosition.x()
-            moveY=event.pos().y()-self.myMousePosition.y()
-            self.camera.Yaw(-moveX)
-            self.camera.Pitch(-moveY)
-            #self.light.lightpos=[-self.camera.forwardDir.X,-self.camera.forwardDir.Y,-self.camera.forwardDir.Z,0]
             self.myMousePosition=event.pos()
         self.update()

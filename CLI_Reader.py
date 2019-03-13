@@ -16,7 +16,7 @@ class CLI():
             file=f.read()
             head=str(file).split('$$HEADEREND')
             head=head[0].split('\\n')
-            print(head)
+            #print(head)
             for line in head:
                 if '$$UNITS' in line:
                     self.unit=float(line.split('/')[1])
@@ -57,7 +57,9 @@ class CLI():
                     self.UsePoint.append(Mypoint)
             except:
                 self.UsePoint.append(Mypoint)
-                print('Finish!')
+                #print('Finish!')
+    def optimizer(self):
+        pass
 if __name__=='__main__':
     w=CLI(path)
     print(len(w.UsePoint))
