@@ -46,7 +46,7 @@ class GLWidget(QOpenGLWidget):
         for i in range(0,len(list_usepoint)):
             
             #print("i:",i)
-            if len(list_usepoint[i])<layer_num:
+            if len(list_usepoint[i])>layer_num:
                 point_num=len(list_usepoint[i][layer_num])
                 #print("多段线数量:",point_num)
                 for j in range(0,point_num):
