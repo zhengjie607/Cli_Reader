@@ -48,22 +48,39 @@ class Ui_Read_cli(QtWidgets.QWidget):
         self.pushButton.clicked.connect(self.inputfile)
         self.pushButton_2.clicked.connect(self.delete)
         self.verticalSlider.valueChanged['int'].connect(self.redraw)
+        self.verticalSlider_Max=0
     def inputfile(self):
         dialog=QtWidgets.QFileDialog()
-        f=dialog.getOpenFileName(self,'Open File','./喷杆cli','CLI File (*.cli)')
-        file=CLI(f[0])
+        f=dialog.getOpenFileNames(self,'Open File','./喷杆cli','CLI File (*.cli)')[0]
+        for fi in f:
+            file=CLI(fi)
+            self.widget.data.append(file.UsePoint)
+            
+            if self.verticalSlider_Max<file.layer:
+                self.verticalSlider_Max=file.layer-1
+            self.verticalSlider.setMaximum(self.verticalSlider_Max)
+            #print((f[0].split('/'))[-1].split('.')[0])
+            self.listWidget.addItem((fi.split('/'))[-1].split('.')[0])
+        self.widget.update()
+        '''file=CLI(f[0])
         self.widget.data.append(file.UsePoint)
-        self.verticalSlider.setMaximum(file.layer)
-        self.listWidget.addItem((f[0].split('/'))[-1].split('.')[0])
+        self.widget.update()
+        if self.verticalSlider_Max<file.layer:
+            self.verticalSlider_Max=file.layer-1
+        self.verticalSlider.setMaximum(self.verticalSlider_Max)
+        self.listWidget.addItem((f[0].split('/'))[-1].split('.')[0])'''
+        
+        
     def redraw(self):
         self.lineEdit.setText(str(self.verticalSlider.value()))
         self.widget.layerindex=self.verticalSlider.value()
         self.widget.update()
     def delete(self):
         self.listWidget.clear()
+        self.widget.data.clear()
+        self.widget.update()
 app=QtWidgets.QApplication(sys.argv)
 mywindow=Ui_Read_cli()
 mywindow.show()
 app.exec_()
 sys.exit()
-
